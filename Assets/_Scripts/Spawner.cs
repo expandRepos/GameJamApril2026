@@ -2,15 +2,18 @@ using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
 
+[RequireComponent(typeof(CircleCollider2D))]
 public class Spawner : MonoBehaviour
 {
-    public Collider2D spawnArea;
+
+    private CircleCollider2D spawnArea;
     public GameObject prefabToSpawn;
     public List<GameObject> dropList = new List<GameObject>();
     public float spawnTimer;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        spawnArea = GetComponent<CircleCollider2D>();
         InvokeRepeating("SpawnObjects", 2f, spawnTimer);
     }
 
@@ -22,14 +25,12 @@ public class Spawner : MonoBehaviour
 
     public void SpawnObjects()
     {
-        Bounds bounds = spawnArea.bounds;
-        float x = Random.Range(bounds.min.x, bounds.max.x);
-        float y = Random.Range(bounds.min.y, bounds.max.y);
-        
-        Vector2 spawnPos = new Vector2(x,y);
+        Vector3 spawnPosition = transform.position + (Vector3)Random.insideUnitCircle * spawnArea.radius;
+
         int randomIndex = Random.Range(0, dropList.Count);
         GameObject randomPrefab = dropList[randomIndex];
-        Instantiate(randomPrefab,spawnPos, Quaternion.identity);
+
+        Instantiate(randomPrefab, spawnPosition, Quaternion.identity);
         Debug.Log("Spawn)");
     }
 }
